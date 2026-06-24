@@ -1,0 +1,31 @@
+import javax.swing.*;
+
+
+public class Connect4Frame extends JFrame {
+
+
+    public Connect4Frame() {
+
+
+        setTitle("Connect 4");
+
+
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
+        );
+
+
+        add(new Board());
+
+
+        pack();
+
+
+        setLocationRelativeTo(null);
+
+
+        setVisible(true);
+
+    }
+
+}
