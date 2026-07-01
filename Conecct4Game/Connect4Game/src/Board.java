@@ -1,0 +1,419 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class Board extends JPanel implements MouseListener {
+
+    private final int ROWS = 6;
+
+    private final int COLS = 7;
+
+    private final int SIZE = 80;
+
+
+    private int[][] board;
+
+
+    private Player player1;
+
+    private Player player2;
+
+
+
+    private Player currentPlayer;
+
+
+
+    private boolean gameOver;
+
+
+
+    public Board(){
+
+
+        board = new int[ROWS][COLS];
+
+
+        player1 = new Player(
+                1,
+                Color.RED
+        );
+
+
+        player2 = new Player(
+                2,
+                Color.YELLOW
+        );
+
+
+
+        currentPlayer = player1;
+
+
+        gameOver = false;
+
+
+
+        setPreferredSize(
+                new Dimension(
+                        COLS * SIZE,
+                        ROWS * SIZE + 50
+                )
+        );
+
+
+
+        addMouseListener(this);
+
+    }
+
+
+
+
+
+    @Override
+    protected void paintComponent(Graphics g){
+
+
+        super.paintComponent(g);
+
+
+
+        // տախտակ
+
+        g.setColor(Color.BLUE);
+
+
+        g.fillRect(
+                0,
+                50,
+                COLS * SIZE,
+                ROWS * SIZE
+        );
+
+
+
+        // քարեր
+
+        for(int r = 0; r < ROWS; r++){
+
+
+            for(int c = 0; c < COLS; c++){
+
+
+
+                if(board[r][c] == 1){
+
+                    g.setColor(
+                            player1.getColor()
+                    );
+
+                }
+
+                else if(board[r][c] == 2){
+
+
+                    g.setColor(
+                            player2.getColor()
+                    );
+
+                }
+
+                else{
+
+
+                    g.setColor(Color.WHITE);
+
+                }
+
+
+
+                g.fillOval(
+                        c * SIZE + 10,
+                        r * SIZE + 60,
+                        SIZE - 20,
+                        SIZE - 20
+                );
+
+
+            }
+
+        }
+
+
+
+        g.setColor(Color.BLACK);
+
+
+        g.setFont(
+                new Font(
+                        "Arial",
+                        Font.BOLD,
+                        25
+                )
+        );
+
+
+
+        if(gameOver){
+
+
+            g.drawString(
+                    "Player "
+                            + currentPlayer.getId()
+                            + " wins!",
+                    20,
+                    35
+            );
+
+
+        }
+
+        else{
+
+
+            g.drawString(
+                    "Player "
+                            + currentPlayer.getId()
+                            + " turn",
+                    20,
+                    35
+            );
+
+        }
+
+    }
+
+
+
+
+
+    @Override
+    public void mouseClicked(MouseEvent e){
+
+
+
+        if(gameOver)
+            return;
+
+
+
+        int column = e.getX() / SIZE;
+
+
+
+        if(column >= COLS)
+            return;
+
+
+
+        for(int row = ROWS - 1; row >= 0; row--){
+
+
+
+            if(board[row][column] == 0){
+
+
+
+                board[row][column] =
+                        currentPlayer.getId();
+
+
+
+
+                if(checkWinner(row,column)){
+
+
+                    gameOver = true;
+
+
+                }
+
+                else{
+
+
+                    changePlayer();
+
+                }
+
+
+
+                repaint();
+
+
+                return;
+
+            }
+
+        }
+
+    }
+
+
+
+
+
+    private void changePlayer(){
+
+
+        if(currentPlayer == player1){
+
+
+            currentPlayer = player2;
+
+
+        }
+
+        else{
+
+
+            currentPlayer = player1;
+
+
+        }
+
+    }
+
+
+
+
+
+
+    private boolean checkWinner(int row,int col){
+
+
+
+        return
+                checkDirection(row,col,1,0)
+                        ||
+                        checkDirection(row,col,0,1)
+                        ||
+                        checkDirection(row,col,1,1)
+                        ||
+                        checkDirection(row,col,1,-1);
+
+    }
+
+
+
+
+
+
+    private boolean checkDirection(
+            int row,
+            int col,
+            int dr,
+            int dc
+    ){
+
+
+        int count = 1;
+
+
+
+        count += countPieces(
+                row,
+                col,
+                dr,
+                dc
+        );
+
+
+
+        count += countPieces(
+                row,
+                col,
+                -dr,
+                -dc
+        );
+
+
+
+        return count >= 4;
+
+    }
+
+
+
+
+
+
+    private int countPieces(
+            int row,
+            int col,
+            int dr,
+            int dc
+    ){
+
+
+        int count = 0;
+
+
+
+        int r = row + dr;
+
+        int c = col + dc;
+
+
+
+        while(
+                r >= 0 &&
+                        r < ROWS &&
+                        c >= 0 &&
+                        c < COLS &&
+                        board[r][c] == currentPlayer.getId()
+        ){
+
+
+
+            count++;
+
+
+            r += dr;
+
+            c += dc;
+
+
+        }
+
+
+
+        return count;
+
+    }
+
+
+
+
+
+
+    // Restart ֆունկցիա
+
+    public void resetGame(){
+
+
+
+        board = new int[ROWS][COLS];
+
+
+
+        currentPlayer = player1;
+
+
+
+        gameOver = false;
+
+
+
+        repaint();
+
+
+    }
+
+    public void mousePressed(MouseEvent e){}
+    public void mouseReleased(MouseEvent e){}
+    public void mouseEntered(MouseEvent e){}
+    public void mouseExited(MouseEvent e){}
+
+
+}
